@@ -46,7 +46,7 @@ Paste this URL to your browser to do the action below.
 
 ## Usage
 
-1. Connect your device (e.g., smartphone, computer) to the Wi-Fi network created by the ESP8266 NodeMCU with the SSID "your_SSID" and password "your_PASSWORD".
+1. Connect your device (e.g., smartphone, computer) to the Wi-Fi network created by the ESP8266 NodeMCU with the SSID `your_SSID` and password `your_PASSWORD`.
 2. Use a web browser or tools like Postman or cURL to send HTTP requests to the ESP8266 NodeMCU on the specified endpoints.
 
 ## License
