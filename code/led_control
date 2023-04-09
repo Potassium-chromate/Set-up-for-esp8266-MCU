@@ -4,8 +4,8 @@
 #include <ArduinoJson.h>
 
 
-const char *ssid = "SAD_MAN";
-const char *password = "20230313";
+const char *ssid = "your_SSID";
+const char *password = "your_PASSWORD";
 const int serverPort = 80;
 
 ESP8266WebServer server(serverPort);
