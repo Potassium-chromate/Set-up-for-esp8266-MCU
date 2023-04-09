@@ -29,8 +29,8 @@ This project demonstrates using an ESP8266 NodeMCU as an access point to create 
 3. Connect the other end of the resistor to the GND pin on the ESP8266 NodeMCU.
 
 ## Endpoints
-
-- `http://192.168.4.1/ledon` - Turn on the LED connected to the TX pin
+Paste this URL to your browser to do the action below.  
+- `http://192.168.4.1/ledon` -  Turn on the LED connected to the TX pin
 - `http://192.168.4.1/ledoff` - Turn off the LED connected to the TX pin
 - `http://192.168.4.1/sendArray` - Send an array via an HTTP POST request (Content-Type: `text/plain`)
 
