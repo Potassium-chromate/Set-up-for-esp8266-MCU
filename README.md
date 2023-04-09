@@ -1,54 +1,54 @@
-# ESP8266 Access Point with LED Control and Array Processing
+# Project: ESP8266 Access Point with LED Control and Array Processing
 
-This project demonstrates using an ESP8266 NodeMCU as an access point to create a Wi-Fi network, control an LED connected to the TX pin, and process an array sent via an HTTP POST request. The ESP8266 runs an HTTP server and listens for incoming requests on specific endpoints.
-
-## Features
-
+## Features:
 - Create a Wi-Fi access point with a custom SSID and password
 - Control an LED connected to the TX (GPIO1) pin via HTTP GET requests
 - Process and send an array received via an HTTP POST request to the Serial1 port
+- Parse the received array using the ArduinoJson library
+- Send the array elements as 8-bit integers over the Serial1 interface  
 
-## Prerequisites
+## Prerequisites:
+- Arduino IDE
+- ESP8266 Core for Arduino
+- ArduinoJson library
+- CH340 Windows 10 driver download  
 
-- [Arduino IDE](https://www.arduino.cc/en/software)
-- [ESP8266 Core for Arduino](https://github.com/esp8266/Arduino)
-- [ArduinoJson library](https://arduinojson.org)
-- [CH340 Windows 10 driver download](https://www.arduined.eu/ch340-windows-10-driver-download/)
+## Quick Start:
+1. Open the Arduino IDE, go to File > Preferences, and add the following URL to the "Additional Boards Manager URLs" field:
+   http://arduino.esp8266.com/stable/package_esp8266com_index.json
+2. Go to Tools > Board > Boards Manager and search for "ESP8266". Install the "esp8266" package by ESP8266 Community.
+3. Select the "Generic ESP8266 Module" from Tools > Board > ESP8266 Modules.
+4. Install the "ArduinoJson" library by Benoit Blanchon via Sketch > Include Library > Manage Libraries.
+5. Connect your ESP8266 NodeMCU to your computer using a USB cable.
+6. Replace `your_SSID` and `your_PASSWORD` in the code with your desired WiFi SSID and password.
+7. Upload the sketch to your ESP8266 NodeMCU.  
 
-## Quick start
-- Preference ==> setting  
-![Preference](https://github.com/Potassium-chromate/Set-up-for-esp8266-MCU/blob/main/picture/URL.png)
-- Tools==> board ==> esp8266 ==> Boards Manager
-![Preference](https://github.com/Potassium-chromate/Set-up-for-esp8266-MCU/blob/main/picture/Board%20Manager.png)
-- Install ESP8266
-![Preference](https://github.com/Potassium-chromate/Set-up-for-esp8266-MCU/blob/main/picture/lib.png)
-- Tools==> board ==> esp8266 ==> Generic ESP8266Module
-![Preference](https://github.com/Potassium-chromate/Set-up-for-esp8266-MCU/blob/main/picture/Choose%20board.png)
-## Hardware
-
+## Hardware:
 - ESP8266 NodeMCU
 - LED
 - 330 ohm resistor
 - Breadboard
-- Jumper wires
+- Jumper wires  
 
-## Wiring
-
+## Wiring:
 1. Connect the LED's anode (longer leg) to the TX (GPIO1) pin on the ESP8266 NodeMCU.
 2. Connect a 330-ohm resistor to the LED's cathode (shorter leg).
-3. Connect the other end of the resistor to the GND pin on the ESP8266 NodeMCU.
+3. Connect the other end of the resistor to the GND pin on the ESP8266 NodeMCU.  
 
-## Endpoints
-Paste this URL to your browser to do the action below.  
-- `http://192.168.4.1/ledon` -  Turn on the LED connected to the TX pin
-- `http://192.168.4.1/ledoff` - Turn off the LED connected to the TX pin
-- `http://192.168.4.1/sendArray` - Send an array via an HTTP POST request (Content-Type: `text/plain`)
+## Endpoints:
+- http://192.168.4.1/ledon - Turn on the LED connected to the TX pin
+- http://192.168.4.1/ledoff - Turn off the LED connected to the TX pin
+- http://192.168.4.1/sendArray - Send an array via an HTTP POST request (Content-Type: text/plain)  
 
-## Usage
-
+## Usage:
 1. Connect your device (e.g., smartphone, computer) to the Wi-Fi network created by the ESP8266 NodeMCU with the SSID `your_SSID` and password `your_PASSWORD`.
-2. Use a web browser or tools like Postman or cURL to send HTTP requests to the ESP8266 NodeMCU on the specified endpoints.
+2. Use a web browser or tools like Postman or cURL to send HTTP requests to the ESP8266 NodeMCU on the specified endpoints. The server will process the array elements and send them as 8-bit integers over the Serial1 interface.
+3. The server will respond with the status of the received request:
+   - 200 OK: Array received and processed successfully.
+   - 400 Bad Request: Missing array data or invalid FPGA flag value.
+   - 503 Service Unavailable: FPGA is busy.  
 
-## License
+## License:
+This project is licensed under the MIT License.
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
