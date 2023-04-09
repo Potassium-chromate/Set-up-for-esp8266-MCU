@@ -15,11 +15,15 @@ This project demonstrates using an ESP8266 NodeMCU as an access point to create 
 - [ArduinoJson library](https://arduinojson.org)
 - [CH340 Windows 10 driver download](https://www.arduined.eu/ch340-windows-10-driver-download/)
 
-##Quick start
-+ Preference ==> setting
+## Quick start
+- Preference ==> setting  
 ![Preference](https://github.com/Potassium-chromate/Set-up-for-esp8266-MCU/blob/main/picture/URL.png)
-+ Tools==> board ==> esp8266 ==> Generic ESP8266Module
+- Tools==> board ==> esp8266 ==> Boards Manager
 ![Preference](https://github.com/Potassium-chromate/Set-up-for-esp8266-MCU/blob/main/picture/Board%20Manager.png)
+- Install ESP8266
+![Preference](https://github.com/Potassium-chromate/Set-up-for-esp8266-MCU/blob/main/picture/lib.png)
+- Tools==> board ==> esp8266 ==> Generic ESP8266Module
+![Preference](https://github.com/Potassium-chromate/Set-up-for-esp8266-MCU/blob/main/picture/Choose%20board.png)
 ## Hardware
 
 - ESP8266 NodeMCU
