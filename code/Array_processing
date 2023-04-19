@@ -3,8 +3,8 @@
 #include <ESP8266WebServer.h>
 #include <ArduinoJson.h>
 
-const char *ssid = "SAD_MAN";
-const char *password = "20230313";
+const char *ssid = "your_ssid";
+const char *password = "your_password";
 const int serverPort = 80;
 
 const int pins[] = {D0, D1, D2, D3, D4, D5, D6, D7}; // Replace with the GPIO pins you want to use
@@ -26,6 +26,7 @@ void setup() {
   Serial.println(IP);
 
   server.on("/sendArray", HTTP_POST, handleArray);
+  server.on("/test", HTTP_POST, testArray);
   server.begin();
   Serial.println("HTTP server started");
 }
@@ -37,6 +38,15 @@ void loop() {
 void outputToPins(uint8_t value) {
   for (int i = 0; i < 8; i++) {
     digitalWrite(pins[i], (value >> i) & 1);
+  }
+}
+
+void testArray() {
+  if (server.hasArg("plain")) {
+    String receivedArray = server.arg("plain");
+    server.send(200, "text/plain", "Array received and processed: " + receivedArray);
+  } else {
+    server.send(400, "text/plain", "Missing array data");
   }
 }
 
