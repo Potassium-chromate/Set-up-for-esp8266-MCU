@@ -35,6 +35,10 @@
 2. Connect a 330-ohm resistor to the LED's cathode (shorter leg).
 3. Connect the other end of the resistor to the GND pin on the ESP8266 NodeMCU.  
 
+## Test
+- use `test_code.py` to post an array to the server and see if the server can send the array back  
+- Connect `http://192.168.4.1/test`execute `test_code.py`  
+
 ## Endpoints:
 - http://192.168.4.1/ledon - Turn on the LED connected to the TX pin
 - http://192.168.4.1/ledoff - Turn off the LED connected to the TX pin
