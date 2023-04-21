@@ -2,10 +2,12 @@
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <ArduinoJson.h>
+#include <SoftwareSerial.h>
 
-const char *ssid = "your_ssid";
-const char *password = "your_password";
+const char *ssid = "SAD_MAN";
+const char *password = "20230313";
 const int serverPort = 80;
+
 
 const int pins[] = {D0, D1, D2, D3, D4, D5, D6, D7}; // Replace with the GPIO pins you want to use
 
@@ -13,6 +15,7 @@ ESP8266WebServer server(serverPort);
 
 void setup() {
   Serial.begin(115200);
+  
 
   for (int i = 0; i < 8; i++) {
     pinMode(pins[i], OUTPUT);
@@ -52,7 +55,7 @@ void testArray() {
 
 void handleArray() {
   if (server.hasArg("plain")) {
-    int fpgaFlag = Serial1.read();
+    int fpgaFlag = digitalRead(D9);
     if (fpgaFlag == 1) {
       server.send(503, "text/plain", "FPGA is busy");
     } else if (fpgaFlag == 0) {
@@ -78,4 +81,4 @@ void handleArray() {
   } else {
     server.send(400, "text/plain", "Missing array data");
   }
-}
+} 
