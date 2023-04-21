@@ -70,6 +70,7 @@ void handleArray() {
       // Output the array elements as 8-bit values to the selected pins
       for (int value : array) {
         outputToPins(value & 0xFF);
+        delay(10); // Add a small delay 
       }
 
       // Send a success response
