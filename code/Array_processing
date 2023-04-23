@@ -8,7 +8,7 @@ const char *ssid = "SAD_MAN";
 const char *password = "20230313";
 const int serverPort = 80;
 
-
+const int ready_flag = D8;
 const int pins[] = {D0, D1, D2, D3, D4, D5, D6, D7}; // Replace with the GPIO pins you want to use
 
 ESP8266WebServer server(serverPort);
@@ -39,9 +39,13 @@ void loop() {
 }
 
 void outputToPins(uint8_t value) {
+  digitalWrite(ready_flag,HIGH);
+  delay(10);
   for (int i = 0; i < 8; i++) {
     digitalWrite(pins[i], (value >> i) & 1);
   }
+  digitalWrite(ready_flag,LOW);
+  delay(10);
 }
 
 void testArray() {
