@@ -44,6 +44,7 @@ void outputToPins(uint8_t value) {
   for (int i = 0; i < 8; i++) {
     digitalWrite(pins[i], (value >> i) & 1);
   }
+  delay(10);
   digitalWrite(ready_flag,LOW);
   delay(10);
 }
@@ -60,9 +61,9 @@ void testArray() {
 void handleArray() {
   if (server.hasArg("plain")) {
     int fpgaFlag = digitalRead(D9);
-    if (fpgaFlag == 1) {
+    if (fpgaFlag == 0) {
       server.send(503, "text/plain", "FPGA is busy");
-    } else if (fpgaFlag == 0) {
+    } else if (fpgaFlag == 1) {
       String receivedArray = server.arg("plain");
       Serial.println("Received array: " + receivedArray);
 
