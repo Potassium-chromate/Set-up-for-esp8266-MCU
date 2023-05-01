@@ -8,19 +8,19 @@ const char *ssid = "SAD_MAN";
 const char *password = "20230313";
 const int serverPort = 80;
 
-const int ready_flag = D8;
+const int ready_flag = D9;
 const int pins[] = {D0, D1, D2, D3, D4, D5, D6, D7}; // Replace with the GPIO pins you want to use
 
 ESP8266WebServer server(serverPort);
 
 void setup() {
   Serial.begin(115200);
-  
+  Serial.end(); // Disable Serial communication to use D9 as GPIO pin
 
   for (int i = 0; i < 8; i++) {
     pinMode(pins[i], OUTPUT);
   }
-  
+  pinMode(ready_flag, OUTPUT); // Add this line to set ready_flag pin as OUTPUT
   WiFi.mode(WIFI_AP);
   WiFi.softAP(ssid, password);
 
@@ -60,7 +60,7 @@ void testArray() {
 
 void handleArray() {
   if (server.hasArg("plain")) {
-    int fpgaFlag = digitalRead(D9);
+    int fpgaFlag = digitalRead(D8);
     if (fpgaFlag == 0) {
       server.send(503, "text/plain", "FPGA is busy");
     } else if (fpgaFlag == 1) {
