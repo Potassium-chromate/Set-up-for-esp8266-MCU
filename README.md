@@ -52,6 +52,15 @@
    - 400 Bad Request: Missing array data or invalid FPGA flag value.
    - 503 Service Unavailable: FPGA is busy.  
 
+## Aware
+- Because D9(RX) is D9 is primarily used for the UART (Serial) RX function. When using the UART for communication, you should avoid using the D9 (RX) and D10 (TX) pins as GPIO pins. Thus, we should add this to the code  
+```arduino
+const int ready_flag = D9;
+pinMode(ready_flag, OUTPUT); // Add this line to set ready_flag pin as OUTPUT
+pinMode(ready_flag, OUTPUT); // Add this line to set ready_flag pin as OUTPUT
+```
+
+
 ## License:
 This project is licensed under the MIT License.
 
