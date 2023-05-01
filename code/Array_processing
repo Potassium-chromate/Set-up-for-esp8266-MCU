@@ -4,8 +4,8 @@
 #include <ArduinoJson.h>
 #include <SoftwareSerial.h>
 
-const char *ssid = "SAD_MAN";
-const char *password = "20230313";
+const char *ssid = "your_password";
+const char *password = "your_ssid";
 const int serverPort = 80;
 
 const int ready_flag = D9;
