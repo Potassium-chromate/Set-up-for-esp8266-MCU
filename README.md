@@ -31,9 +31,15 @@
 - Jumper wires  
 
 ## Wiring:
-1. Connect the LED's anode (longer leg) to the TX (GPIO1) pin on the ESP8266 NodeMCU.
-2. Connect a 330-ohm resistor to the LED's cathode (shorter leg).
-3. Connect the other end of the resistor to the GND pin on the ESP8266 NodeMCU.  
+- Led test:
+   1. Connect the LED's anode (longer leg) to the TX (GPIO1) pin on the ESP8266 NodeMCU.
+   2. Connect a 330-ohm resistor to the LED's cathode (shorter leg).
+   3. Connect the other end of the resistor to the GND pin on the ESP8266 NodeMCU.
+- Array processing to FPGA:
+   1. Connect D0~D7 to FGPA as angle output.
+   2. Connect D8 to FPGA to read the status of FPGA.
+   3. Connect D9(RX) to FPGA as the preamble of angle output.
+   4. Connect the ground from both ESP8266 and FPGA to unify their ground voltage.
 
 ## Test
 - use `test_code.py` to post an array to the server and see if the server can send the array back  
@@ -59,7 +65,10 @@ const int ready_flag = D9;
 pinMode(ready_flag, OUTPUT); // Add this line to set ready_flag pin as OUTPUT
 pinMode(ready_flag, OUTPUT); // Add this line to set ready_flag pin as OUTPUT
 ```
-
+## Pin purpose
+- **D0~D7:** output the angle (8 bits) 0~255
+- **D8:** read the flag form FPGA (`1`:idle , `0`:busy)
+- **D9:** Start signal (`1`:esp8266 is going to output the angle , `0`:output is finished)
 
 ## License:
 This project is licensed under the MIT License.
