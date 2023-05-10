@@ -1,0 +1,36 @@
+#include <Servo.h>
+
+const int ready_flag = 52;
+const int pins[] = {22, 23, 24, 25, 26, 27, 28, 29}; // Pins connected to ESP8266 or FPGA
+const int servoPin = 9;
+const int fpga_flag = 30;
+
+Servo servo;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(ready_flag, INPUT);
+  pinMode(fpga_flag, OUTPUT);
+  for (int i = 0; i < 8; i++) {
+    pinMode(pins[i], INPUT);
+  }
+
+  digitalWrite(fpga_flag, HIGH);
+
+  servo.attach(servoPin);
+}
+
+void loop() {
+  if (digitalRead(ready_flag) == LOW) {
+    digitalWrite(fpga_flag, LOW);
+    int angle = 0;
+    for (int i = 0; i < 8; i++) {
+      angle |= (digitalRead(pins[i]) << i);
+    }
+    servo.write(angle);
+    Serial.print("Moved servo to angle: ");
+    Serial.println(angle);
+    while (digitalRead(ready_flag) == LOW); // Wait for the ready_flag to go HIGH
+  }
+  digitalWrite(fpga_flag, HIGH);
+}
