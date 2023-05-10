@@ -8,6 +8,7 @@ const char *ssid = "your_password";
 const char *password = "your_ssid";
 const int serverPort = 80;
 
+
 const int ready_flag = D9;
 const int reset_signal = D10;
 const int pins[] = {D0, D1, D2, D3, D4, D5, D6, D7}; // Replace with the GPIO pins you want to use
@@ -23,6 +24,7 @@ void setup() {
   }
   pinMode(ready_flag, OUTPUT); // set ready_flag pin as OUTPUT
   pinMode(reset_signal, OUTPUT); // set ready_flag pin as INPUT
+  pinMode(D8, INPUT); // set ready_flag pin as OUTPUT
   WiFi.mode(WIFI_AP);
   WiFi.softAP(ssid, password);
 
