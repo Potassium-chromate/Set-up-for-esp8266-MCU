@@ -2,8 +2,10 @@
 
 const int ready_flag = 52;
 const int pins[] = {22, 23, 24, 25, 26, 27, 28, 29}; // Pins connected to ESP8266 or FPGA
+const int ind_angle[] = {34, 36, 38, 40, 42, 44, 46, 48};
 const int servoPin = 9;
 const int fpga_flag = 30;
+const int indicate_led = 32;
 
 Servo servo;
 
@@ -11,8 +13,11 @@ void setup() {
   Serial.begin(115200);
   pinMode(ready_flag, INPUT);
   pinMode(fpga_flag, OUTPUT);
+  pinMode(indicate_led, OUTPUT);
+
   for (int i = 0; i < 8; i++) {
     pinMode(pins[i], INPUT);
+    pinMode(ind_angle[i], OUTPUT);
   }
 
   digitalWrite(fpga_flag, HIGH);
@@ -22,10 +27,23 @@ void setup() {
 
 void loop() {
   if (digitalRead(ready_flag) == LOW) {
+
+    digitalWrite(indicate_led, HIGH);
+    delay(1000);
+    digitalWrite(indicate_led, LOW);
+
     digitalWrite(fpga_flag, LOW);
     int angle = 0;
     for (int i = 0; i < 8; i++) {
       angle |= (digitalRead(pins[i]) << i);
+
+      if (digitalRead(pins[i])){
+        digitalWrite(ind_angle[i], HIGH);
+      }
+      else{
+        digitalWrite(ind_angle[i], LOW);
+      }
+
     }
     servo.write(angle);
     Serial.print("Moved servo to angle: ");
