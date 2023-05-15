@@ -1,11 +1,11 @@
 #include <Servo.h>
 
 const int ready_flag = 52;
-const int pins[] = {22, 23, 24, 25, 26, 27, 28, 29}; // Pins connected to ESP8266 or FPGA
-const int ind_angle[] = {34, 36, 38, 40, 42, 44, 46, 48};
+const int pins[] = {30,31,32,33,34,35,36,37}; // Pins connected to ESP8266 or FPGA
+const int ind_angle[] = {38,39,40,41,42,43,44,45};
 const int servoPin = 9;
-const int fpga_flag = 30;
-const int indicate_led = 32;
+const int fpga_flag = 46;
+const int indicate_led =48 ;
 
 Servo servo;
 
