@@ -32,6 +32,9 @@ void setup() {
   Serial.print("AP IP address: ");
   Serial.println(IP);
 
+  digitalWrite(reset_signal,LOW);
+  digitalWrite(ready_flag,HIGH);
+
   server.on("/sendArray", HTTP_POST, handleArray);
   server.on("/test", HTTP_POST, testArray);
   server.on("/reset", HTTP_POST, handleReset);
@@ -67,6 +70,7 @@ void outputToPins(uint8_t value) {
   delay(10);
   digitalWrite(ready_flag,LOW);
   delay(10);
+  digitalWrite(ready_flag,HIGH);
 }
 
 void testArray() {
