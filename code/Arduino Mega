@@ -1,4 +1,8 @@
 #include <Servo.h>
+#include <Stepper.h>
+
+#define STEPS 100
+Stepper stepper(STEPS, 8, 9, 10, 11);
 
 const int ready_flag = 52;
 const int pins[] = {30,31,32,33,34,35,36,37}; // Pins connected to ESP8266 or FPGA
@@ -23,6 +27,7 @@ void setup() {
   digitalWrite(fpga_flag, HIGH);
 
   servo.attach(servoPin);
+  stepper.setSpeed(30);
 }
 
 void loop() {
@@ -45,6 +50,7 @@ void loop() {
       }
 
     }
+    stepper.step(angle);
     servo.write(angle);
     Serial.print("Moved servo to angle: ");
     Serial.println(angle);
