@@ -1,0 +1,79 @@
+#include <Servo.h>
+#include <Stepper.h>
+
+#define STEPS 100
+Stepper stepper(STEPS, 8, 9, 10, 11);
+
+const int ready_flag = 52;
+const int pins[] = {30,31,32,33,29,35,36,37}; // Pins connected to ESP8266 or FPGA
+const int ind_angle[] = {38,39,40,41,42,43,44,45};
+const int servoPin[] = {9,10};
+const int fpga_flag = 46;
+const int indicate_led =48 ;
+const int reset =49 ;
+
+int angle_array[] = {0,0};
+int count = 0; //count how many angles we have gotten
+int array_size = sizeof(angle_array) / sizeof(angle_array[0]);
+Servo servos[2];
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(reset, INPUT);
+  pinMode(ready_flag, INPUT);
+  pinMode(fpga_flag, OUTPUT);
+  pinMode(indicate_led, OUTPUT);
+
+  for (int i = 0; i < 8; i++) {
+    pinMode(pins[i], INPUT);
+    pinMode(ind_angle[i], OUTPUT);
+  }
+
+  digitalWrite(fpga_flag, HIGH);
+
+  for (int i = 0; i < array_size; i++) {
+    servos[i].attach(servoPin[i]);
+  }
+  stepper.setSpeed(30);
+}
+
+void loop() {
+  if (digitalRead(reset) == HIGH){
+    digitalWrite(fpga_flag, LOW);
+    delay(1);
+    for (int i = 0; i < count; i++){
+      servos[i].write(angle_array[i]);
+    }
+    count = 0;
+    digitalWrite(fpga_flag, HIGH);
+  }
+  if (digitalRead(ready_flag) == LOW) {
+    
+    digitalWrite(indicate_led, HIGH);
+    delay(100);
+    digitalWrite(indicate_led, LOW);
+
+    digitalWrite(fpga_flag, LOW);
+    int angle = 0;
+    for (int i = 0; i < 8; i++) {
+      angle |= (digitalRead(pins[i]) << i);
+
+      if (digitalRead(pins[i])){
+        digitalWrite(ind_angle[i], HIGH);
+      }
+      else{
+        digitalWrite(ind_angle[i], LOW);
+      }
+
+    }
+    if (count < array_size){
+      angle_array[count] = angle;
+      count++;
+    }
+
+    Serial.print("Moved servo to angle: ");
+    Serial.println(angle);
+    while (digitalRead(ready_flag) == LOW); // Wait for the ready_flag to go HIGH
+  }
+  digitalWrite(fpga_flag, HIGH);
+}
