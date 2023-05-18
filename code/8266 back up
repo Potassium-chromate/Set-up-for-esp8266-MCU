@@ -9,22 +9,13 @@ const char *password = "your_ssid";
 const int serverPort = 80;
 
 
-const int ready_flag = D9;
-const int reset_signal = D10;
-const int pins[] = {D0, D1, D2, D3, D4, D5, D6, D7}; // Replace with the GPIO pins you want to use
+
 
 ESP8266WebServer server(serverPort);
 
 void setup() {
-  Serial.begin(115200);
-  Serial.end(); // Disable Serial communication to use D9 as GPIO pin
+  Serial.begin(9600);
 
-  for (int i = 0; i < 8; i++) {
-    pinMode(pins[i], OUTPUT);
-  }
-  pinMode(ready_flag, OUTPUT); // set ready_flag pin as OUTPUT
-  pinMode(reset_signal, OUTPUT); // set ready_flag pin as INPUT
-  pinMode(D8, INPUT); // set ready_flag pin as OUTPUT
   WiFi.mode(WIFI_AP);
   WiFi.softAP(ssid, password);
 
@@ -32,12 +23,9 @@ void setup() {
   Serial.print("AP IP address: ");
   Serial.println(IP);
 
-  digitalWrite(reset_signal,LOW);
-  digitalWrite(ready_flag,HIGH);
-
   server.on("/sendArray", HTTP_POST, handleArray);
   server.on("/test", HTTP_POST, testArray);
-  server.on("/reset", HTTP_POST, handleReset);
+ 
   server.begin();
   Serial.println("HTTP server started");
 }
@@ -46,32 +34,7 @@ void loop() {
   server.handleClient();
 }
 
-void handleReset() {
-  if (server.hasArg("plain")) {
-      String receivedArray = server.arg("plain");
-      digitalWrite(reset_signal,HIGH);
-      delay(10);
-      digitalWrite(reset_signal,LOW);
-      delay(10);
-      server.send(200, "text/plain", "Reset successfully" );
-    }
-  else {
-    server.send(400, "text/plain", "Error");
-    }
- 
-}
 
-void outputToPins(uint8_t value) {
-  digitalWrite(ready_flag,HIGH);
-  delay(10);
-  for (int i = 0; i < 8; i++) {
-    digitalWrite(pins[i], (value >> i) & 1);
-  }
-  delay(10);
-  digitalWrite(ready_flag,LOW);
-  delay(10);
-  digitalWrite(ready_flag,HIGH);
-}
 
 void testArray() {
   if (server.hasArg("plain")) {
@@ -84,31 +47,18 @@ void testArray() {
 
 void handleArray() {
   if (server.hasArg("plain")) {
-    int fpgaFlag = digitalRead(D8);
-    if (fpgaFlag == 0) {
-      server.send(503, "text/plain", "FPGA is busy");
-    } else if (fpgaFlag == 1) {
-      String receivedArray = server.arg("plain");
-      Serial.println("Received array: " + receivedArray);
+    String receivedArray = server.arg("plain");
 
-      // Parse the received array
-      DynamicJsonDocument doc(1024);
-      deserializeJson(doc, receivedArray);
-      JsonArray array = doc.as<JsonArray>();
+    DynamicJsonDocument doc(1024);
+    deserializeJson(doc, receivedArray);
+    JsonArray array = doc.as<JsonArray>();
 
-      // Output the array elements as 8-bit values to the selected pins
-      for (int value : array) {
-        outputToPins(value & 0xFF);
-        while(!digitalRead(D8)){} 
-      }
-
-      // Send a success response
-      server.send(200, "text/plain", "Array received and processed");
-    } else {
-      // If the received flag value is unexpected or invalid
-      server.send(400, "text/plain", "Invalid FPGA flag value");
+    for(JsonVariant v : array) {
+      Serial.println(v.as<int>()); // Send each angle to the Arduino Mega.
     }
+
+    server.send(200, "text/plain", "Received angles"); // Send response to client
   } else {
-    server.send(400, "text/plain", "Missing array data");
+    server.send(400, "text/plain", "No angles provided");
   }
-} 
+}
