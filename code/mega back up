@@ -1,55 +1,48 @@
-#include <ESP8266WiFi.h>
-#include <WiFiClient.h>
-#include <ESP8266WebServer.h>
-#include <ArduinoJson.h>  // You need to install this library
+#include <Servo.h>
 
-const char* ssid = "your_password";
-const char* password = "your_ssid";
+#define NUM_SERVOS 2  // replace with the number of your servos
+#define START_CHAR '<'
+#define END_CHAR '>'
 
-ESP8266WebServer server(80);
+Servo servos[NUM_SERVOS];
 
-void setup(void){
-  delay(1000);
+void setup() {
   Serial.begin(9600);
-  
-   WiFi.mode(WIFI_AP);
-  WiFi.softAP(ssid, password);
-  IPAddress IP = WiFi.softAPIP();
-  Serial.print("AP IP address: ");
-  Serial.println(IP);
-
-  server.on("/sendArray", HTTP_POST, handlePost);
-  server.begin();
-  Serial.println("HTTP server started");
-}
-
-void loop(void){
-  server.handleClient();
-}
-
-void handlePost() {
-  if(server.hasArg("plain")== false){ 
-    server.send(200, "text/plain", "Body not received");
-    return;
+  pinMode(31, OUTPUT);
+  for (int i = 0; i < NUM_SERVOS; i++) {
+    servos[i].attach(i+2);  // assumes servos are on pins 2 through NUM_SERVOS+1
   }
-  
-  String message = server.arg("plain");
-  
-  // Parse JSON array
-  DynamicJsonDocument doc(1024);
-  deserializeJson(doc, message);
-  JsonArray array = doc.as<JsonArray>();
+}
 
-  // Convert JSON array to a string in the format expected by the Mega
-  String outMessage = "<";
-  for (int i = 0; i < array.size(); i++) {
-    outMessage += array[i].as<String>();
-    if (i < array.size() - 1) {
-      outMessage += ",";
+void loop() {
+  if (Serial.available()) {
+    digitalWrite(31, HIGH);  // LED on
+    delay(100);  // wait 100ms
+    digitalWrite(31, LOW);  // LED off
+    delay(100);  // wait 100ms
+    
+    static String received = "";
+    char inChar = (char)Serial.read();
+    if (inChar == START_CHAR) {
+      received = "";  // start a new message
+    } else if (inChar == END_CHAR) {
+      parseAndMoveServos(received);  // complete message received
+    } else {
+      received += inChar;  // add to the message
     }
   }
-  outMessage += ">";
-  Serial.println(outMessage);
+}
 
-  server.send(200, "text/plain", "Body received");
+void parseAndMoveServos(String received) {
+  int servoNum = 0;
+  int startIdx = 0;
+  int commaIdx = received.indexOf(',');
+  while (commaIdx != -1 && servoNum < NUM_SERVOS) {
+    servos[servoNum++].write(received.substring(startIdx, commaIdx).toInt());
+    startIdx = commaIdx+1;
+    commaIdx = received.indexOf(',', startIdx);
+  }
+  if (servoNum < NUM_SERVOS) {
+    servos[servoNum].write(received.substring(startIdx).toInt());
+  }
 }
