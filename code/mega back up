@@ -1,26 +1,55 @@
-#include <Servo.h>
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h>
+#include <ESP8266WebServer.h>
+#include <ArduinoJson.h>  // You need to install this library
 
-Servo myservo;  // create servo object to control a servo
+const char* ssid = "your_password";
+const char* password = "your_ssid";
 
-void setup() {
-  Serial.begin(9600); // start serial for output
-  Serial1.begin(9600); // start serial1 for communication with ESP8266
-  myservo.attach(9);  // attaches the servo on pin 9 to the servo object
+ESP8266WebServer server(80);
+
+void setup(void){
+  delay(1000);
+  Serial.begin(9600);
+  
+   WiFi.mode(WIFI_AP);
+  WiFi.softAP(ssid, password);
+  IPAddress IP = WiFi.softAPIP();
+  Serial.print("AP IP address: ");
+  Serial.println(IP);
+
+  server.on("/sendArray", HTTP_POST, handlePost);
+  server.begin();
+  Serial.println("HTTP server started");
 }
 
-void loop() {
-  // Check if data is available to read
-  if (Serial1.available()) {
-    // Read the incoming data
-    String angleStr = Serial1.readStringUntil('\n');
+void loop(void){
+  server.handleClient();
+}
 
-    // Convert the string to an integer
-    int angle = angleStr.toInt();
-
-    // Print the received angle
-    Serial.println("Received angle: " + String(angle));
-
-    // Control the servo motor
-    myservo.write(angle);
+void handlePost() {
+  if(server.hasArg("plain")== false){ 
+    server.send(200, "text/plain", "Body not received");
+    return;
   }
+  
+  String message = server.arg("plain");
+  
+  // Parse JSON array
+  DynamicJsonDocument doc(1024);
+  deserializeJson(doc, message);
+  JsonArray array = doc.as<JsonArray>();
+
+  // Convert JSON array to a string in the format expected by the Mega
+  String outMessage = "<";
+  for (int i = 0; i < array.size(); i++) {
+    outMessage += array[i].as<String>();
+    if (i < array.size() - 1) {
+      outMessage += ",";
+    }
+  }
+  outMessage += ">";
+  Serial.println(outMessage);
+
+  server.send(200, "text/plain", "Body received");
 }
