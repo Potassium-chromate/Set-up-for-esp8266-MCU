@@ -16,10 +16,6 @@ void setup() {
 
 void loop() {
   if (Serial.available()) {
-    digitalWrite(31, HIGH);  // LED on
-    delay(100);  // wait 100ms
-    digitalWrite(31, LOW);  // LED off
-    delay(100);  // wait 100ms
     
     static String received = "";
     char inChar = (char)Serial.read();
