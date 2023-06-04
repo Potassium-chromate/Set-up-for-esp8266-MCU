@@ -5,18 +5,21 @@
 #define NUM_STEPPERS 2  // the number of your stepper motors
 #define START_CHAR '<'
 #define END_CHAR '>'
+#define STEPS_PER_MOTOR_REVOLUTION 400
+#define STEPS_PER_OUTPUT_REVOLUTION 400 // for direct drive this will be the same
 
 Servo servos[NUM_SERVOS];
 Stepper steppers[NUM_STEPPERS] = {
-  Stepper(STEPS_PER_MOTOR_REVOLUTION, 8, 9, 10, 11),
-  Stepper(STEPS_PER_MOTOR_REVOLUTION, 4, 5, 6, 7)
+  Stepper(STEPS_PER_MOTOR_REVOLUTION, 35, 36, 37, 38),
+  Stepper(STEPS_PER_MOTOR_REVOLUTION, 39, 40, 41, 42)
 };
 
 void setup() {
   Serial.begin(9600);
   for (int i = 0; i < NUM_SERVOS; i++) {
-    servos[i].attach(i+2);  // assumes servos are on pins 2 through NUM_SERVOS+1
+    servos[i].attach(i+22);  // assumes servos are on pins 2 through NUM_SERVOS+1 22~
   }
+  myStepper.setSpeed(60);
 }
 
 void loop() {
@@ -51,8 +54,10 @@ void parseAndMoveServosAndSteppers(String received) {
     int direction = received.substring(startIdx, commaIdx).toInt();
     if (direction == 1) {
       steppers[i].step(STEPS_PER_MOTOR_REVOLUTION);  // 1 full revolution clockwise
+      delay(100);
     } else if (direction == 2) {
       steppers[i].step(-STEPS_PER_MOTOR_REVOLUTION);  // 1 full revolution counter-clockwise
+      delay(100);
     }
     startIdx = commaIdx+1;
   }
