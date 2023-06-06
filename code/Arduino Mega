@@ -1,60 +1,84 @@
 #include <Servo.h>
-#include <Stepper.h>
 
-#define STEPS 100
-Stepper stepper(STEPS, 8, 9, 10, 11);
+#define NUM_SERVOS 13  // replace with the number of your servos
+#define NUM_STEPPERS 2  // the number of your stepper motors
+#define START_CHAR '<'
+#define END_CHAR '>'
+const int stepper1[] = {35,36,37}; // dirPin stepPin enPin
+const int stepper2[] = {38,39,40};
 
-const int ready_flag = 52;
-const int pins[] = {30,31,32,33,34,35,36,37}; // Pins connected to ESP8266 or FPGA
-const int ind_angle[] = {38,39,40,41,42,43,44,45};
-const int servoPin = 9;
-const int fpga_flag = 46;
-const int indicate_led =48 ;
-
-Servo servo;
+Servo servos[NUM_SERVOS];
 
 void setup() {
-  Serial.begin(115200);
-  pinMode(ready_flag, INPUT);
-  pinMode(fpga_flag, OUTPUT);
-  pinMode(indicate_led, OUTPUT);
-
-  for (int i = 0; i < 8; i++) {
-    pinMode(pins[i], INPUT);
-    pinMode(ind_angle[i], OUTPUT);
+  Serial.begin(9600);
+  for (int i = 0; i < NUM_SERVOS; i++) {
+    servos[i].attach(i+22);  // assumes servos are on pins 2 through NUM_SERVOS+1 22~
   }
-
-  digitalWrite(fpga_flag, HIGH);
-
-  servo.attach(servoPin);
-  stepper.setSpeed(30);
+  for (int i = 0; i < 3; i++) {
+    pinMode(stepper1[i],OUTPUT);
+    pinMode(stepper2[i],OUTPUT); 
+  }
+  digitalWrite(stepper1[2],LOW);
+  digitalWrite(stepper2[2],LOW);
 }
 
 void loop() {
-  if (digitalRead(ready_flag) == LOW) {
-
-    digitalWrite(indicate_led, HIGH);
-    delay(1000);
-    digitalWrite(indicate_led, LOW);
-
-    digitalWrite(fpga_flag, LOW);
-    int angle = 0;
-    for (int i = 0; i < 8; i++) {
-      angle |= (digitalRead(pins[i]) << i);
-
-      if (digitalRead(pins[i])){
-        digitalWrite(ind_angle[i], HIGH);
-      }
-      else{
-        digitalWrite(ind_angle[i], LOW);
-      }
-
+  if (Serial.available()) {
+    static String received = "";
+    char inChar = (char)Serial.read();
+    if (inChar == START_CHAR) {
+      received = "";  // start a new message
+    } else if (inChar == END_CHAR) {
+      parseAndMoveServosAndSteppers(received);  // complete message received
+    } else {
+      received += inChar;  // add to the message
     }
-    stepper.step(angle);
-    servo.write(angle);
-    Serial.print("Moved servo to angle: ");
-    Serial.println(angle);
-    while (digitalRead(ready_flag) == LOW); // Wait for the ready_flag to go HIGH
   }
-  digitalWrite(fpga_flag, HIGH);
+}
+
+void parseAndMoveServosAndSteppers(String received) {
+  int deviceNum = 0;
+  int startIdx = 0;
+  int commaIdx = received.indexOf(',');
+  while (commaIdx != -1 && deviceNum < NUM_SERVOS) {
+    servos[deviceNum++].write(received.substring(startIdx, commaIdx).toInt());
+    startIdx = commaIdx+1;
+    commaIdx = received.indexOf(',', startIdx);
+  }
+  if (deviceNum < NUM_SERVOS) {
+    servos[deviceNum].write(received.substring(startIdx).toInt());
+  }
+  
+  for (int i = 0; i < NUM_STEPPERS; i++) {
+    commaIdx = received.indexOf(',', startIdx);
+    int direction = received.substring(startIdx, commaIdx).toInt();
+    int dirPin, stepPin;
+    if(i==0) {
+      dirPin = stepper1[0];
+      stepPin = stepper1[1];
+    } else {
+      dirPin = stepper2[0];
+      stepPin = stepper2[1];
+    }
+    if (direction == 1) {
+      digitalWrite(dirPin,HIGH); // Enables the motor to move in a particular direction
+      for(int x = 0; x < 200; x++) {
+        digitalWrite(stepPin,HIGH); 
+        delayMicroseconds(500); 
+        digitalWrite(stepPin,LOW); 
+        delayMicroseconds(500); 
+      }
+      delay(1000); // One second delay
+    } else if (direction == 2) {
+      digitalWrite(dirPin,LOW); // Changes the direction of rotation
+      for(int x = 0; x < 200; x++) {
+        digitalWrite(stepPin,HIGH); 
+        delayMicroseconds(500); 
+        digitalWrite(stepPin,LOW); 
+        delayMicroseconds(500); 
+      }
+      delay(1000); // One second delay
+    }
+    startIdx = commaIdx+1;
+  }
 }
