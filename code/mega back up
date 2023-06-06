@@ -5,8 +5,8 @@
 #define NUM_STEPPERS 2  // the number of your stepper motors
 #define START_CHAR '<'
 #define END_CHAR '>'
-#define STEPS_PER_MOTOR_REVOLUTION 400
-#define STEPS_PER_OUTPUT_REVOLUTION 400 // for direct drive this will be the same
+#define STEPS_PER_MOTOR_REVOLUTION 200
+#define STEPS_PER_OUTPUT_REVOLUTION 100 // for direct drive this will be the same
 
 Servo servos[NUM_SERVOS];
 Stepper steppers[NUM_STEPPERS] = {
@@ -20,7 +20,7 @@ void setup() {
     servos[i].attach(i+22);  // assumes servos are on pins 2 through NUM_SERVOS+1 22~
   }
   for (int i = 0; i < NUM_STEPPERS; i++) {
-    steppers[i].setSpeed(60);  // set the speed for each stepper motor
+    steppers[i].setSpeed(20);  // set the speed for each stepper motor
   }
 }
 
@@ -55,11 +55,15 @@ void parseAndMoveServosAndSteppers(String received) {
     commaIdx = received.indexOf(',', startIdx);
     int direction = received.substring(startIdx, commaIdx).toInt();
     if (direction == 1) {
-      steppers[i].step(STEPS_PER_MOTOR_REVOLUTION);  // 1 full revolution clockwise
-      delay(100);
+      steppers[i].step(STEPS_PER_OUTPUT_REVOLUTION);  // 1 full revolution clockwise
+      delay(500);
     } else if (direction == 2) {
-      steppers[i].step(-STEPS_PER_MOTOR_REVOLUTION);  // 1 full revolution counter-clockwise
-      delay(100);
+      steppers[i].step(-STEPS_PER_OUTPUT_REVOLUTION);  // 1 full revolution counter-clockwise
+      delay(500);
+    }
+     else if (direction == 0) {
+      steppers[i].step(0);  // 1 full revolution counter-clockwise
+      delay(500);
     }
     startIdx = commaIdx+1;
   }
