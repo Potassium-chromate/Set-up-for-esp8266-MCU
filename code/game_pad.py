@@ -15,6 +15,7 @@ class move:
     def movement(self):
         foot = []
         arm= []
+        button = []
         if self.axe_ref[1]<-.1:
             num = abs(self.axe_ref[1])
             num = round(num,1)
@@ -47,7 +48,14 @@ class move:
             num = abs(self.axe_ref[2])
             num = round(num,1)
             arm.append("right :"+str(num)) 
-        return [foot,arm]
+            
+        if self.button[0]==1:
+            num = abs(self.button[0])
+            num = round(num,1)
+            button.append("button :"+str(num))
+         
+            
+        return [foot,arm,button]
 
 # Initialize Pygame
 pygame.init()
@@ -106,7 +114,9 @@ while True:
         print("foot: ",ret[0])
     if len(ret[1]) != 0:
         print("arm: ",ret[1])
-    
+        
+    if len(ret[2]) != 0:
+        print("button: ",ret[2])
     
     time.sleep(0.15)
     
