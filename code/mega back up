@@ -20,6 +20,8 @@ void setup() {
   for (int i = 0; i < 3; i++) {
     pinMode(stepper1[i],OUTPUT);
     pinMode(stepper2[i],OUTPUT);
+  }
+  for (int i = 0; i < 2; i++) {
     pinMode(DC1[i],OUTPUT);
     pinMode(DC2[i],OUTPUT);
   }
@@ -115,5 +117,5 @@ void parseAndMoveServosAndSteppers(String received) {
   digitalWrite(DC1[1],LOW);
   digitalWrite(DC2[0],LOW);
   digitalWrite(DC2[1],LOW);
-  startIdx = commaIdx+1;
+  
 }
