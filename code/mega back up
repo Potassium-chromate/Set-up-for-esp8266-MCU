@@ -108,6 +108,7 @@ void parseAndMoveServosAndSteppers(String received) {
       digitalWrite(Pin1,LOW);   
       digitalWrite(Pin2,HIGH);   
     }
+    startIdx = commaIdx+1;
   }
   delay(100); // 0.1 second delay
   digitalWrite(DC1[0],LOW);
