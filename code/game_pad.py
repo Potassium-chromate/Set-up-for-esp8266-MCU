@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Wed Jun 14 15:34:31 2023
+
+@author: Eason
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Tue Mar  7 22:18:37 2023
 
 @author: Eason
@@ -11,7 +18,7 @@ import time
 class move:
     def __init__(self,axes,buttons,avg_axes,avg_buttons):
         self.axe_ref = [axes[i]-avg_axes[i] for i in range(len(axes))]
-        self.button = [buttons[i]-avg_buttons[i] for i in range(len(buttons))]
+        self.button = [buttons[i] for i in range(len(buttons))]
     def movement(self):
         foot = []
         arm= []
@@ -49,11 +56,18 @@ class move:
             num = round(num,1)
             arm.append("right :"+str(num)) 
             
-        if self.button[0]==1:
+        if self.button[0]>=0.9:
             num = abs(self.button[0])
             num = round(num,1)
-            button.append("button :"+str(num))
-         
+            button.append("button 0:")
+        elif self.button[1]>=0.9:
+            num = abs(self.button[1])
+            num = round(num,1)
+            button.append("button 1:")
+        elif self.button[2]>=0.9:
+            num = abs(self.button[2])
+            num = round(num,1)
+            button.append("button 2:")
             
         return [foot,arm,button]
 
@@ -109,16 +123,17 @@ while True:
     
     agent = move(instant_axes,instant_buttons,avg_axes,avg_buttons)
     ret = agent.movement()
+    
     if len(ret[0]) != 0:
-        
         print("foot: ",ret[0])
+    
     if len(ret[1]) != 0:
         print("arm: ",ret[1])
         
     if len(ret[2]) != 0:
         print("button: ",ret[2])
     
-    time.sleep(0.15)
+    time.sleep(0.05)
     
     
         
